@@ -1,0 +1,267 @@
+# Envoy Metrics
+
+Question: There are quite some metrics for rejected requests because of underscores in headers. Do we want to count these requests as well?
+
+Note: Downstream metrics do not seem to be categorized per cluster (as that is pretty much impossible), so you can't distinguish between responses
+to client requests or, for example, health check requests ..... So the downstream metrics do not seem to be useful for our use-case.
+
+## ExtAuth metrics - 1
+
+Provides metrics for ExtAuht, including the numer of approved, denied and error requests.
+Stored per "envoy_cluster_name".
+
+### TYPE envoy_cluster_ext_authz_denied counter
+[source]
+----
+envoy_cluster_ext_authz_denied{envoy_cluster_name="default-httpbin-8000_gloo-system"} 15334
+----
+### TYPE envoy_cluster_ext_authz_error counter
+[source]
+----
+envoy_cluster_ext_authz_error{envoy_cluster_name="default-httpbin-8000_gloo-system"} 3237
+----
+### TYPE envoy_cluster_ext_authz_ok counter
+[source]
+----
+envoy_cluster_ext_authz_ok{envoy_cluster_name="default-httpbin-8000_gloo-system"} 178936
+----
+
+## ExtAuth Metrics - 2
+Not yet sure how different these are from the previous ExtAuth metrics ...
+
+Looks like these are metrics for all http traffic, while the other metrics are partitioned per envoy_cluster.
+
+### TYPE envoy_http_ext_authz_denied counter
+[source]
+----
+envoy_http_ext_authz_denied{envoy_http_conn_manager_prefix="http"} 15334
+----
+### TYPE envoy_http_ext_authz_disabled counter
+[source]
+----
+envoy_http_ext_authz_disabled{envoy_http_conn_manager_prefix="http"} 0
+----
+### TYPE envoy_http_ext_authz_error counter
+[source]
+----
+envoy_http_ext_authz_error{envoy_http_conn_manager_prefix="http"} 3237
+----
+### TYPE envoy_http_ext_authz_failure_mode_allowed counter
+[source]
+----
+envoy_http_ext_authz_failure_mode_allowed{envoy_http_conn_manager_prefix="http"} 0
+----
+### TYPE envoy_http_ext_authz_ok counter
+[source]
+----
+envoy_http_ext_authz_ok{envoy_http_conn_manager_prefix="http"} 178936
+----
+
+## Upstream metrics
+
+These are split into 3 groups:
+
+* Upstream rq counters per envoy_response_code per envoy_cluster_name.
+* Upstrean rq counters for completed requests per envoy_cluster_name.
+* Upstream rq counters per response code class (e.g. 2xx, 5xx) per envoy_cluster_name.
+
+
+### TYPE envoy_cluster_external_upstream_rq counter
+[source]
+----
+envoy_cluster_external_upstream_rq{envoy_response_code="200",envoy_cluster_name="admin_port_cluster"} 3528
+envoy_cluster_external_upstream_rq{envoy_response_code="200",envoy_cluster_name="default-httpbin-8000_gloo-system"} 67722
+envoy_cluster_external_upstream_rq{envoy_response_code="201",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34117
+envoy_cluster_external_upstream_rq{envoy_response_code="202",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34099
+envoy_cluster_external_upstream_rq{envoy_response_code="204",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34086
+envoy_cluster_external_upstream_rq{envoy_response_code="503",envoy_cluster_name="default-httpbin-8000_gloo-system"} 126
+envoy_cluster_external_upstream_rq{envoy_response_code="504",envoy_cluster_name="default-httpbin-8000_gloo-system"} 43
+----
+### TYPE envoy_cluster_external_upstream_rq_completed counter
+[source]
+----
+envoy_cluster_external_upstream_rq_completed{envoy_cluster_name="admin_port_cluster"} 3528
+envoy_cluster_external_upstream_rq_completed{envoy_cluster_name="default-httpbin-8000_gloo-system"} 170193
+----
+### TYPE envoy_cluster_external_upstream_rq_xx counter
+[source]
+----
+envoy_cluster_external_upstream_rq_xx{envoy_response_code_class="2",envoy_cluster_name="admin_port_cluster"} 3528
+envoy_cluster_external_upstream_rq_xx{envoy_response_code_class="2",envoy_cluster_name="default-httpbin-8000_gloo-system"} 170024
+envoy_cluster_external_upstream_rq_xx{envoy_response_code_class="5",envoy_cluster_name="default-httpbin-8000_gloo-system"} 169
+----
+
+## Internal upstream metrics
+
+Interstingly enough, these internal uostream rq counters do not include the "200" response codes to our httpbin upstream ... the only include the 401 and 429s ...... 
+
+
+### TYPE envoy_cluster_internal_upstream_rq counter
+[source]
+----
+envoy_cluster_internal_upstream_rq{envoy_response_code="401",envoy_cluster_name="default-httpbin-8000_gloo-system"} 15334
+envoy_cluster_internal_upstream_rq{envoy_response_code="429",envoy_cluster_name="default-httpbin-8000_gloo-system"} 8743
+envoy_cluster_internal_upstream_rq{envoy_response_code="200",envoy_cluster_name="extauth_gloo-system"} 194285
+envoy_cluster_internal_upstream_rq{envoy_response_code="504",envoy_cluster_name="extauth_gloo-system"} 3222
+envoy_cluster_internal_upstream_rq{envoy_response_code="200",envoy_cluster_name="rate-limit_gloo-system"} 176708
+envoy_cluster_internal_upstream_rq{envoy_response_code="504",envoy_cluster_name="rate-limit_gloo-system"} 2227
+envoy_cluster_internal_upstream_rq{envoy_response_code="200",envoy_cluster_name="xds_cluster"} 1
+envoy_cluster_internal_upstream_rq{envoy_response_code="503",envoy_cluster_name="xds_cluster"} 1
+----
+### TYPE envoy_cluster_internal_upstream_rq_completed counter
+
+These completed requests, at least for httpbin, seem to be the sum of the rq per response code above.
+So in the case of `default-httpbin-8000_gloo-system`, the value is the sum of the "401" and "429" codes.
+I.e.: 15334 + 8743 = 24077
+
+
+[source]
+----
+envoy_cluster_internal_upstream_rq_completed{envoy_cluster_name="default-httpbin-8000_gloo-system"} 24077
+envoy_cluster_internal_upstream_rq_completed{envoy_cluster_name="extauth_gloo-system"} 197507
+envoy_cluster_internal_upstream_rq_completed{envoy_cluster_name="rate-limit_gloo-system"} 178935
+envoy_cluster_internal_upstream_rq_completed{envoy_cluster_name="xds_cluster"} 2
+----
+### TYPE envoy_cluster_internal_upstream_rq_xx counter
+[source]
+----
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="4",envoy_cluster_name="default-httpbin-8000_gloo-system"} 24077
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="2",envoy_cluster_name="extauth_gloo-system"} 194285
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="5",envoy_cluster_name="extauth_gloo-system"} 3222
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="2",envoy_cluster_name="rate-limit_gloo-system"} 176708
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="5",envoy_cluster_name="rate-limit_gloo-system"} 2227
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="2",envoy_cluster_name="xds_cluster"} 1
+envoy_cluster_internal_upstream_rq_xx{envoy_response_code_class="5",envoy_cluster_name="xds_cluster"} 1
+----
+
+
+## RateLimit Metrics
+
+Rate limit metrics are stored per "envoy_cluster_name".
+
+### TYPE envoy_cluster_ratelimit_error counter
+[source]
+----
+envoy_cluster_ratelimit_error{envoy_cluster_name="default-httpbin-8000_gloo-system"} 2258
+----
+### TYPE envoy_cluster_ratelimit_failure_mode_allowed counter
+[source]
+----
+envoy_cluster_ratelimit_failure_mode_allowed{envoy_cluster_name="default-httpbin-8000_gloo-system"} 2258
+----
+### TYPE envoy_cluster_ratelimit_ok counter
+[source]
+----
+envoy_cluster_ratelimit_ok{envoy_cluster_name="default-httpbin-8000_gloo-system"} 167934
+----
+### TYPE envoy_cluster_ratelimit_over_limit counter
+[source]
+----
+envoy_cluster_ratelimit_over_limit{envoy_cluster_name="default-httpbin-8000_gloo-system"} 8743
+----
+
+
+## Upstream rq counter
+
+QUESTION: is this metric a combination of internal and external upstream requests? If so, this might include the ext-auth and rate limited requests that
+were never sent to the upstream service, and hence is currently not counted.
+
+Note: There is also a `envoy_cluster_upstream_rq_0rtt counter`, just below this one in the metrics output, but
+a) I don't know what that metrics really means.
+b) All the values of that metric are 0.
+Seems to have something to do with TLS and `zero-round trip time`: https://blog.cloudflare.com/introducing-0-rtt
+
+### TYPE envoy_cluster_upstream_rq counter
+[source]
+----
+envoy_cluster_upstream_rq{envoy_response_code="200",envoy_cluster_name="admin_port_cluster"} 3528
+envoy_cluster_upstream_rq{envoy_response_code="200",envoy_cluster_name="default-httpbin-8000_gloo-system"} 67722
+envoy_cluster_upstream_rq{envoy_response_code="201",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34117
+envoy_cluster_upstream_rq{envoy_response_code="202",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34099
+envoy_cluster_upstream_rq{envoy_response_code="204",envoy_cluster_name="default-httpbin-8000_gloo-system"} 34086
+envoy_cluster_upstream_rq{envoy_response_code="401",envoy_cluster_name="default-httpbin-8000_gloo-system"} 15334
+envoy_cluster_upstream_rq{envoy_response_code="429",envoy_cluster_name="default-httpbin-8000_gloo-system"} 8743
+envoy_cluster_upstream_rq{envoy_response_code="503",envoy_cluster_name="default-httpbin-8000_gloo-system"} 126
+envoy_cluster_upstream_rq{envoy_response_code="504",envoy_cluster_name="default-httpbin-8000_gloo-system"} 43
+envoy_cluster_upstream_rq{envoy_response_code="200",envoy_cluster_name="extauth_gloo-system"} 194285
+envoy_cluster_upstream_rq{envoy_response_code="504",envoy_cluster_name="extauth_gloo-system"} 3222
+envoy_cluster_upstream_rq{envoy_response_code="200",envoy_cluster_name="rate-limit_gloo-system"} 176708
+envoy_cluster_upstream_rq{envoy_response_code="504",envoy_cluster_name="rate-limit_gloo-system"} 2227
+envoy_cluster_upstream_rq{envoy_response_code="200",envoy_cluster_name="xds_cluster"} 1
+envoy_cluster_upstream_rq{envoy_response_code="503",envoy_cluster_name="xds_cluster"} 1
+----
+
+
+## Upstream request completed
+
+Note that this is not the metric we're currently using, as that is `external_upstream_rq_completed`.
+
+This metric does not seem to include the ExtAuth denied and RateLimited requests, as it only counts completed requests (needs to be verified).
+
+### TYPE envoy_cluster_upstream_rq_completed counter
+[source]
+----
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="admin_port_cluster"} 3528
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="default-httpbin-8000_gloo-system"} 194270
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="default-kubernetes-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="extauth_gloo-system"} 197507
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-extauth-8083_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gateway-proxy-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gateway-proxy-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-9966_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-9976_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-9977_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-9979_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-9988_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-fed-console-10101_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-fed-console-8081_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-gloo-fed-console-8090_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-glooe-grafana-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-glooe-prometheus-kube-state-metrics-v2-8080_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-glooe-prometheus-server-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-rate-limit-18081_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="gloo-system-redis-6379_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_default-httpbin-8000_default"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_default-kubernetes-443_default"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-extauth-8083_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gateway-proxy-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gateway-proxy-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-9966_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-9976_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-9977_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-9979_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-9988_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-fed-console-10101_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-fed-console-8081_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-gloo-fed-console-8090_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-glooe-grafana-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-glooe-prometheus-kube-state-metrics-v2-8080_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-glooe-prometheus-server-80_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-rate-limit-18081_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_gloo-system-redis-6379_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_kube-system-kube-dns-53_kube-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_kube-system-kube-dns-9153_kube-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-svc_metallb-system-metallb-webhook-service-443_metallb-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-system-kube-dns-53_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="kube-system-kube-dns-9153_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="metallb-system-metallb-webhook-service-443_gloo-system"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="rate-limit_gloo-system"} 178935
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="rest_xds_cluster"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="wasm-cache"} 0
+envoy_cluster_upstream_rq_completed{envoy_cluster_name="xds_cluster"} 2
+----
+
+
+
+
+## Total HTTP requests
+
+### TYPE envoy_http_rq_total counter
+[source]
+----
+envoy_http_rq_total{envoy_http_conn_manager_prefix="async-client"} 376444
+envoy_http_rq_total{envoy_http_conn_manager_prefix="http"} 170193
+envoy_http_rq_total{envoy_http_conn_manager_prefix="prometheus"} 3529
+----

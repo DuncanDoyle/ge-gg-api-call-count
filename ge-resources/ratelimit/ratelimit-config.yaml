@@ -1,0 +1,22 @@
+apiVersion: ratelimit.solo.io/v1alpha1
+kind: RateLimitConfig
+metadata:
+  name: apikey-limit
+  namespace: gloo-system
+spec:
+  raw:
+    setDescriptors:
+    - simpleDescriptors:
+      # For this test, we only rate-limit requests with this key
+      - key: apiKey
+        value: TjJObE0ySTNaVFl0TkdJeU55MWxNbVV4TFRCaU9UQXRZbVUyTkRnek1tRmxZamN5
+      # - key: number
+      #   value: one
+      rateLimit:
+        requestsPerUnit: 2500
+        unit: HOUR
+    rateLimits:
+      - setActions:
+        - requestHeaders:
+            descriptorKey: apiKey
+            headerName: api-key
