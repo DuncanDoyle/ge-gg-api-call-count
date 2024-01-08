@@ -26,7 +26,3 @@ extauth/create-apikey-for-ratelimit.sh
 kubectl apply -f vs.yaml
 
 popd
-
-
-
-popd
