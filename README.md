@@ -27,6 +27,8 @@ We use [Apache JMeter](https://jmeter.apache.org/) to define and run our tests. 
 
 The results will be captured in `jtl` (JMeter Test Log) file, which will be immediately analyzed using the `analyze-jmeter-results.sh` script. This will display the number of calls made, number of responses per HTTP response code, etc. We can use this information to compare it with the metrics gathered by Prometheus.
 
+Note that the tests currently expect the HTTPBin service to be accessible at `http://api.example.com/httpbin/`, and hence, a mapping from that domain name to your Gloo Edge proxy location needs to exists and be available.
+
 ## Prometheus metrics
 To fetch the Prometheus metrics, first make the Prometheus API endpoint accessible from your local machine. This can be done with the [`port-forward-gloo-system-prometheus.sh`](setup/port-forward-gloo-system-prometheus.sh) script in the `setup` directory.
 
