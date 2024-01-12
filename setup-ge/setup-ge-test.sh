@@ -21,6 +21,7 @@ kubectl apply -f ratelimit/ratelimit-config.yaml
 # Create the ApiKeys for the extauth and ratelimit test-runs
 extauth/create-apikey.sh
 extauth/create-apikey-for-ratelimit.sh
+extauth/create-apikey-for-ratelimit-warmup.sh
 
 # Apply the VirtualService
 kubectl apply -f vs.yaml

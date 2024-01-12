@@ -1,0 +1,12 @@
+
+Istio Requests total for ingress-gateway (all response codes): httpbin.default.svc.cluster.local - response code 200: 8112.8482490538445
+httpbin.default.svc.cluster.local - response code 201: 4073.860081572929
+httpbin.default.svc.cluster.local - response code 202: 4196.937425427096
+httpbin.default.svc.cluster.local - response code 204: 4129.244886307304
+httpbin.default.svc.cluster.local - response code 404: 2564.1113302951467
+httpbin.default.svc.cluster.local - response code 401: 2564.1113302951467
+httpbin.default.svc.cluster.local - response code 418: 2564.1113302951467
+httpbin.default.svc.cluster.local - response code 429: 5128.222660590293
+unknown - response code 404: 2564.1113302951467
+
+Total HTTP requests: "35897.55862413205"

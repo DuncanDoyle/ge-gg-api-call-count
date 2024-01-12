@@ -6,7 +6,7 @@
 #
 ############################################################################################################
 
-TIME_RANGE=10m
+TIME_RANGE=20m
 
 # Retrieves all the successful upstream requests .... This means that it doesn't include call that got denied because of ExtAuth, RateLimit and/or WAF.
 # It might also not include requests that ended up in an error in upstream.

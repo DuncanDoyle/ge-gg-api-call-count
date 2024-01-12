@@ -4,7 +4,7 @@ printf "\nTailing the Gloo Edge Envoy access logs.\n"
 
 export DATE=$(date +%Y-%m-%d_%H-%M-%S)
 
-export LOG_FILE_NAME="api-call-count-jmeter-test-$DATE.log"
+export LOG_FILE_NAME="ge-api-call-count-jmeter-test-$DATE.log"
 
 printf "\nLogging to file: $LOG_FILE_NAME\n"
 

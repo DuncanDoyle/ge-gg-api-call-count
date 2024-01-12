@@ -1,0 +1,18 @@
+apiVersion: trafficcontrol.policy.gloo.solo.io/v2
+kind: RateLimitClientConfig
+metadata:
+  name: rate-limit-apikey-client-config
+  namespace: gloo-mesh
+spec:
+  raw:
+    rateLimits:
+    - setActions:
+      - requestHeaders:
+          descriptorKey: apiKey
+          headerName: api-key
+      # - metadata:
+      #     descriptorKey: userId
+      #     metadataKey:
+      #       key: envoy.filters.http.ext_authz
+      #       path:
+      #         - key: userId

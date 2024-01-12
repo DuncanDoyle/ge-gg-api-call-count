@@ -15,6 +15,13 @@ spec:
       rateLimit:
         requestsPerUnit: 2500
         unit: HOUR
+    - simpleDescriptors:
+      # For this test, we only rate-limit requests with this key
+      - key: apiKey
+        value: TjJObE0ySTNaVFl0TkdJeU55MWxNbVV4TFRCaU9UQXRZbVUyTkRnek1tRmxZamN1
+      rateLimit:
+        requestsPerUnit: 0
+        unit: MINUTE
     rateLimits:
       - setActions:
         - requestHeaders:

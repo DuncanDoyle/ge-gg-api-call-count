@@ -1,0 +1,38 @@
+
+Cluster External Upstream RQ Completed: "25026.15310804893"
+
+Cluster Upstream RQ completed: "86554.45908878087"
+
+Cluster External Upstream RQ (all response codes): default-httpbin-8000_gloo-system - response code 200: 8934.13768821918
+default-httpbin-8000_gloo-system - response code 201: 4587.961535325482
+default-httpbin-8000_gloo-system - response code 202: 4405.365953648046
+default-httpbin-8000_gloo-system - response code 204: 4577.928811057491
+default-httpbin-8000_gloo-system - response code 404: 2464.0338077917886
+default-httpbin-8000_gloo-system - response code 503: 34.9753667997381
+default-httpbin-8000_gloo-system - response code 504: 5.148217315506488
+
+Cluster Upstream RQ (all response codes): default-httpbin-8000_gloo-system - response code 200: 8934.212534579876
+default-httpbin-8000_gloo-system - response code 201: 4587.999967216891
+default-httpbin-8000_gloo-system - response code 202: 4405.402855661013
+default-httpbin-8000_gloo-system - response code 204: 4577.967158889644
+default-httpbin-8000_gloo-system - response code 401: 2175.1095645142173
+default-httpbin-8000_gloo-system - response code 404: 2464.0544443389035
+default-httpbin-8000_gloo-system - response code 429: 2110.8995912198425
+default-httpbin-8000_gloo-system - response code 503: 34.97646358808375
+default-httpbin-8000_gloo-system - response code 504: 5.148383983839839
+
+ExtAuth Denied: "2175.1277801547867"
+
+ExtAuth Error: "782.6045946725536"
+
+ExtAuth OK: "27138.405523701767"
+
+RateLimit Error: "659.3986881809835"
+
+RateLimit Failure Mode Allowed: "659.4200895428883"
+
+RateLimit OK: "24338.854410210843"
+
+RateLimit Over: "2111.0286381476035"
+
+Total HTTP requests: "27537.940516308758"

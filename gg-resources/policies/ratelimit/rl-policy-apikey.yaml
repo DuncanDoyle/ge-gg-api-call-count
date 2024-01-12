@@ -1,0 +1,25 @@
+apiVersion: trafficcontrol.policy.gloo.solo.io/v2
+kind: RateLimitPolicy
+metadata:
+  name: rate-limit-apikey
+  namespace: default
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        route: httpbin
+  config:
+    ratelimitServerConfig:
+      name: rate-limit-apikey-server-config
+      namespace: gloo-mesh
+      cluster: gg-demo-single
+    ratelimitClientConfig:
+      name: rate-limit-apikey-client-config
+      namespace: gloo-mesh
+      cluster: gg-demo-single
+    serverSettings:
+      name: rl-server
+      namespace: gloo-mesh
+    phase:
+      postAuthz:
+        priority: 1

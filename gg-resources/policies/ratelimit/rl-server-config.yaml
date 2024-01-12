@@ -1,0 +1,30 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: RateLimitServerConfig
+metadata:
+  name: rate-limit-apikey-server-config
+  namespace: gloo-mesh
+spec:
+  destinationServers:
+  - port:
+      name: grpc
+    ref:
+      cluster: gg-demo-single
+      name: rate-limiter
+      namespace: gloo-mesh
+  raw:
+    setDescriptors:
+      - simpleDescriptors:
+        - key: apiKey
+          value: TjJObE0ySTNaVFl0TkdJeU55MWxNbVV4TFRCaU9UQXRZbVUyTkRnek1tRmxZamN5
+        rateLimit:
+          # requestsPerUnit: 1
+          # unit: MINUTE
+          requestsPerUnit: 2500
+          unit: HOUR
+      - simpleDescriptors:
+        - key: apiKey
+          value: TjJObE0ySTNaVFl0TkdJeU55MWxNbVV4TFRCaU9UQXRZbVUyTkRnek1tRmxZamN1
+        rateLimit:
+          requestsPerUnit: 0
+          unit: MINUTE
+          
